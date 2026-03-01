@@ -16,11 +16,18 @@ struct CodeBreakerView: View {
     // MARK: - Body
     var body: some View {
         VStack {
-            view(for: game.masterCode)
+            CodeView(code: game.masterCode, selection: $selection, ancillaryView: { EmptyView() })
             ScrollView {
-                view(for: game.guess)
+                CodeView(code: game.guess, selection: $selection, ancillaryView: {
+                        guessButton
+                } )
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    view(for: game.attempts[index])
+                    CodeView(
+                        code: game.attempts[index],
+                        selection: $selection,
+                        ancillaryView:{
+                            MatchMarkers(matches: game.attempts[index].matches ?? [])
+                        })
                 }
             }
             .scrollIndicators(.hidden)
@@ -47,21 +54,6 @@ struct CodeBreakerView: View {
         }
     }
     
-    func view(for code: Code) -> some View {
-        HStack {
-            CodeView(code: code, selection: $selection)
-            Rectangle()
-                .foregroundStyle(.clear)
-                .aspectRatio(1, contentMode: .fit)
-                .overlay {
-                    if let matches = code.matches {
-                        MatchMarkers(matches: matches)
-                    } else if code.kind == .guess {
-                        guessButton
-                    }
-                }
-        }
-    }
     
     struct GuessButton {
         static let minimumFontSize: CGFloat = 8
