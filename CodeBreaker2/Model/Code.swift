@@ -27,6 +27,7 @@ struct Code {
         }
     }
     
+    // for showing or hiding master code
     var isHidden: Bool {
         switch kind {
         case .master(let isHidden): return isHidden

@@ -16,27 +16,36 @@ struct CodeBreakerView: View {
     // MARK: - Body
     var body: some View {
         VStack {
-            CodeView(code: game.masterCode, selection: $selection, ancillaryView: { EmptyView() })
+            CodeView(code: game.masterCode)
+//                .transaction { transaction in
+//                    if game.masterCode.kind == .master(isHidden: false) {
+//                        transaction.animation = .none
+//                    }
+//                }
             ScrollView {
-                CodeView(code: game.guess, selection: $selection, ancillaryView: {
-                        guessButton
-                } )
+                if !game.isOver {
+                    CodeView(code: game.guess, selection: $selection) {
+                            guessButton
+                    }
+                }
+                
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    CodeView(
-                        code: game.attempts[index],
-                        selection: $selection,
-                        ancillaryView:{
-                            MatchMarkers(matches: game.attempts[index].matches ?? [])
-                        })
+                    CodeView(code: game.attempts[index], selection: $selection) {
+                        if let matches = game.attempts[index].matches {
+                            MatchMarkers(matches: matches)
+                        }
+                    }
                 }
             }
             .scrollIndicators(.hidden)
-            PegChooser(choices: game.pegChoices) { peg in
-                game.setGuessPeg(peg, at: selection)
-                selection = (selection + 1) % game.masterCode.pegs.count
-            }
+            PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
         }
         .padding()
+    }
+    
+    func changePegAtSelection(to peg: Peg) {
+        game.setGuessPeg(peg, at: selection)
+        selection = (selection + 1) % game.masterCode.pegs.count
     }
     
     

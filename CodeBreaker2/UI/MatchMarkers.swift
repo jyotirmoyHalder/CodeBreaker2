@@ -29,11 +29,6 @@ struct MatchMarkers: View {
                 matchMarker(peg: 3)
             }
         }
-        .padding()
-        .background {
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(lineWidth: 1)
-        }
     }
     
     @ViewBuilder

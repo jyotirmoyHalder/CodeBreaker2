@@ -16,6 +16,16 @@ struct CodeView<Ancillaryview>: View where Ancillaryview: View {
     
     @ViewBuilder let ancillaryView: () -> Ancillaryview
     
+    init(
+        code: Code,
+        selection: Binding<Int> = .constant(-1),
+        @ViewBuilder ancillaryView: @escaping () -> Ancillaryview = { EmptyView() }
+    ) {
+        self.code = code
+        self._selection = selection
+        self.ancillaryView = ancillaryView
+    }
+     
     // MARK: - Body
     
     var body: some View {
