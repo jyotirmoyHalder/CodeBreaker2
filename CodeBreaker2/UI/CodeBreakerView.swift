@@ -12,33 +12,39 @@ struct CodeBreakerView: View {
     @State private var game: CodeBreaker = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
     
     @State private var selection = 0
+    @State private var restarting = false
+    @State private var hideMostRecentMarkers = false
     
     // MARK: - Body
     var body: some View {
         VStack {
+            Button("Restart", systemImage: "arrow.circlepath", action: restart)
+                .labelStyle(.automatic)
             CodeView(code: game.masterCode)
-//                .transaction { transaction in
-//                    if game.masterCode.kind == .master(isHidden: false) {
-//                        transaction.animation = .none
-//                    }
-//                }
             ScrollView {
-                if !game.isOver {
+                if !game.isOver || restarting {
                     CodeView(code: game.guess, selection: $selection) {
-                            guessButton
+                        Button("Guess", action: guess).flexibleSystemFont()
                     }
+                    .animation(nil, value: game.attempts.count)
+                    .opacity(restarting ? 0 : 1)
                 }
                 
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     CodeView(code: game.attempts[index], selection: $selection) {
-                        if let matches = game.attempts[index].matches {
+                        let showMarkers = !hideMostRecentMarkers || index != game.attempts.count - 1
+                        if showMarkers, let matches = game.attempts[index].matches {
                             MatchMarkers(matches: matches)
                         }
                     }
+                    .transition(.attempt(game.isOver))
                 }
             }
             .scrollIndicators(.hidden)
-            PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+            if !game.isOver {
+                PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+                    .transition(.pegChooser)
+            }
         }
         .padding()
     }
@@ -48,35 +54,32 @@ struct CodeBreakerView: View {
         selection = (selection + 1) % game.masterCode.pegs.count
     }
     
-    
-    var guessButton: some View {
-        Button {
-            withAnimation {
-                game.attemptGuess()
+    func restart() {
+        withAnimation(.restart) {
+            restarting = true
+        } completion: {
+            withAnimation(.restart) {
+                game.restart()
                 selection = 0
+                restarting = false
             }
-        } label: {
-            Text("Guess")
-                .font(.system(size: GuessButton.maximumFontSize))
-                .minimumScaleFactor(GuessButton.scaleFactor)
-                .fontWeight(.bold)
         }
     }
     
-    
-    struct GuessButton {
-        static let minimumFontSize: CGFloat = 8
-        static let maximumFontSize: CGFloat = 80
-        static let scaleFactor = minimumFontSize / maximumFontSize
+    func guess() {
+        withAnimation(.guess) {
+            game.attemptGuess()
+            selection = 0
+            hideMostRecentMarkers = true
+        } completion: {
+            withAnimation(.guess) {
+                hideMostRecentMarkers = false
+            }
+        }
     }
     
 }
 
-extension Color {
-    static func gray(_ brightness: CGFloat) -> Color {
-        Color(hue: 148/360, saturation: 0, brightness: brightness)
-    }
-}
 
 #Preview {
     CodeBreakerView()

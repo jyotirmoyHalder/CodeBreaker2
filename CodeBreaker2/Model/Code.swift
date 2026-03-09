@@ -25,6 +25,7 @@ struct Code {
         for index in pegs.indices {
             pegs[index] = pegChoices.randomElement() ?? Code.missiongPeg
         }
+        print(self)
     }
     
     // for showing or hiding master code
