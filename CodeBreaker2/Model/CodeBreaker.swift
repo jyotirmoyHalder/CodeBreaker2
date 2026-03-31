@@ -14,18 +14,22 @@ extension Peg {
 typealias Peg = Color
 
 struct CodeBreaker {
+    var name: String
     var masterCode: Code = Code(kind: .master(isHidden: true))
     var guess: Code = Code(kind: .guess)
     var attempts: [Code] = []
     let pegChoices: [Peg]
+    var startTime: Date = .now
+    var endTime: Date? = nil
     
-    init(pegChoices: [Peg] = [.red, .green, .blue, .yellow]) {
+    init(name: String = "Code Breaker", pegChoices: [Peg] = [.red, .green, .blue, .yellow]) {
+        self.name = name
         self.pegChoices = pegChoices
         masterCode.randomize(from: pegChoices)
     }
     
     var isOver: Bool {
-        attempts.last?.pegs == masterCode.pegs
+        attempts.first?.pegs == masterCode.pegs
     }
     
     mutating func restart() {
@@ -33,6 +37,8 @@ struct CodeBreaker {
         masterCode.randomize(from: pegChoices)
         guess.reset()
         attempts.removeAll()
+        startTime = .now
+        endTime = nil
     }
     
     mutating func setGuessPeg(_ peg: Peg, at index: Int) {
@@ -41,12 +47,14 @@ struct CodeBreaker {
     }
     
     mutating func attemptGuess() {
+        guard !attempts.contains(where: { $0.pegs == guess.pegs }) else { return }
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
-        attempts.append(attempt)
+        attempts.insert(attempt, at: 0)
         guess.reset()
         if isOver {
             masterCode.kind = .master(isHidden: false)
+            endTime = .now
         }
     }
     
