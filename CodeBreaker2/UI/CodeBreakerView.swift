@@ -8,8 +8,14 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
+    // MARK: Data In
+    @Environment(\.words) var words
+    
+    // MARK: Data Shared with Me
+    let game: CodeBreaker
+
+    
     // MARK: Data Owned by Me
-    @State private var game: CodeBreaker = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
     
     @State private var selection = 0
     @State private var restarting = false
@@ -18,14 +24,7 @@ struct CodeBreakerView: View {
     // MARK: - Body
     var body: some View {
         VStack {
-            Button("Restart", systemImage: "arrow.circlepath", action: restart)
-                .labelStyle(.automatic)
-            CodeView(code: game.masterCode) {
-                ElapsedTime(startTime: game.startTime, endTime: game.endTime)
-                    .flexibleSystemFont()
-                    .monospaced()
-                    .lineLimit(1)
-            }
+            CodeView(code: game.masterCode)
             ScrollView {
                 if !game.isOver {
                     CodeView(code: game.guess, selection: $selection) {
@@ -49,6 +48,17 @@ struct CodeBreakerView: View {
             if !game.isOver {
                 PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
                     .transition(.pegChooser)
+                    .frame(maxHeight: 90)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Restart", systemImage: "arrow.circlepath", action: restart)
+            }
+            ToolbarItem {
+                ElapsedTime(startTime: game.startTime, endTime: game.endTime)
+                    .monospaced()
+                    .lineLimit(1)
             }
         }
         .padding()
@@ -87,5 +97,8 @@ struct CodeBreakerView: View {
 
 
 #Preview {
-    CodeBreakerView()
+    @Previewable @State var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
+    NavigationStack {
+        CodeBreakerView(game: game)
+    }
 }

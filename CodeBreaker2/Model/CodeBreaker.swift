@@ -13,12 +13,13 @@ extension Peg {
 
 typealias Peg = Color
 
-struct CodeBreaker {
+@Observable class CodeBreaker {
+    
     var name: String
     var masterCode: Code = Code(kind: .master(isHidden: true))
     var guess: Code = Code(kind: .guess)
     var attempts: [Code] = []
-    let pegChoices: [Peg]
+    var pegChoices: [Peg]
     var startTime: Date = .now
     var endTime: Date? = nil
     
@@ -32,7 +33,7 @@ struct CodeBreaker {
         attempts.first?.pegs == masterCode.pegs
     }
     
-    mutating func restart() {
+    func restart() {
         masterCode.kind = .master(isHidden: true)
         masterCode.randomize(from: pegChoices)
         guess.reset()
@@ -41,12 +42,12 @@ struct CodeBreaker {
         endTime = nil
     }
     
-    mutating func setGuessPeg(_ peg: Peg, at index: Int) {
+    func setGuessPeg(_ peg: Peg, at index: Int) {
         guard guess.pegs.indices.contains(index) else { return }
         guess.pegs[index] = peg
     }
     
-    mutating func attemptGuess() {
+    func attemptGuess() {
         guard !attempts.contains(where: { $0.pegs == guess.pegs }) else { return }
         var attempt = guess
         attempt.kind = .attempt(guess.match(against: masterCode))
@@ -70,3 +71,13 @@ struct CodeBreaker {
 }
 
 
+
+extension CodeBreaker: Identifiable, Hashable, Equatable {
+    static func == (lhs: CodeBreaker, rhs: CodeBreaker) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

@@ -18,7 +18,7 @@ extension AnyTransition {
 }
 
 extension Animation {
-    static let codeBreaker = Animation.easeInOut(duration: 2)
+    static let codeBreaker = Animation.easeInOut(duration: 0.3)
     static let guess = Animation.codeBreaker
     static let restart = Animation.codeBreaker
     static let selection = Animation.codeBreaker
