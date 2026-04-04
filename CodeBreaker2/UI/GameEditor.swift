@@ -17,11 +17,19 @@ struct GameEditor: View {
     // MARK: Action Function
     let onChoose: () -> Void
     
+    // MARK: Data Owned by Me
+    @State private var showInvalidGameAlert = false
+    
     var body: some View {
         NavigationStack {
             Form {
                 Section("NAME") {
                     TextField("Name", text: $game.name)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled(false)
+                        .onSubmit {
+                            done()
+                        }
                 }
                 Section("Pegs") {
                     PegChoicesChooser(pegChoices: $game.pegChoices)
@@ -35,12 +43,33 @@ struct GameEditor: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
-                        onChoose()
-                        dismiss()
+                        done()
+                    }
+                    .alert("Invalid Game", isPresented: $showInvalidGameAlert) {
+                        Button("OK") {
+                            showInvalidGameAlert = false
+                        }
+                    } message: {
+                        Text("A game must have a name and more than one unique peg.")
                     }
                 }
             }
         }
+    }
+    
+    func done() {
+        if game.isValid {
+            onChoose()
+            dismiss()
+        } else {
+            showInvalidGameAlert = true
+        }
+    }
+}
+
+extension CodeBreaker {
+    var isValid: Bool {
+        !name.isEmpty && Set(pegChoices).count >= 2
     }
 }
 
