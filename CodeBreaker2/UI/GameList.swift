@@ -54,7 +54,7 @@ struct GameList: View {
     
     var addButton: some View {
         Button("Add Game", systemImage: "plus") {
-            gameToEdit = CodeBreaker(name: "Untitled", pegChoices: [.red, .blue])
+            gameToEdit = CodeBreaker(name: "Untitled", pegChoices: [Color.red, Color.blue].map{ $0.toHexString() ?? ""})
         }
         .sheet(isPresented: showGameEditor) {
             gameEditor
@@ -101,9 +101,9 @@ struct GameList: View {
     
     func addSampleGames() {
         if games.isEmpty {
-            games.append(CodeBreaker(name: "Mastermind", pegChoices: [.red, .green, .blue, .yellow]))
-            games.append(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
-            games.append(CodeBreaker(name: "Undersea", pegChoices: [.blue, .indigo, .cyan]))
+            games.append(CodeBreaker(name: "Mastermind", pegChoices: [Color.red, .green, .blue, .yellow].map{ $0.toHexString() ?? ""}))
+            games.append(CodeBreaker(name: "Earth Tones", pegChoices: [Color.orange, .brown, .black, .yellow, .green].map{ $0.toHexString() ?? ""}))
+            games.append(CodeBreaker(name: "Undersea", pegChoices: [Color.blue, .indigo, .cyan].map{ $0.toHexString() ?? ""}))
             selection = games[Int.random(in: 0..<games.count)]
         }
     }

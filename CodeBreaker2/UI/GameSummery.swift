@@ -22,11 +22,11 @@ struct GameSummery: View {
 
 #Preview {
     List {
-        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [.red, .cyan, .yellow]))
+        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow].map{ $0.toHexString() ?? ""}))
     }
     
     List {
-        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [.red, .cyan, .yellow]))
+        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow].map{ $0.toHexString() ?? ""}))
     }
     .listStyle(.plain)
 }

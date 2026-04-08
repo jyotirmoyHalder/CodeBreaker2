@@ -32,7 +32,7 @@ struct GameEditor: View {
                         }
                 }
                 Section("Pegs") {
-                    PegChoicesChooser(pegChoices: $game.pegChoices)
+                    PegChoicesChooser(pegChoices: $game.pegColorChoices)
                 }
             }
             .toolbar {
@@ -74,7 +74,7 @@ extension CodeBreaker {
 }
 
 #Preview {
-    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [.orange, .purple])
+    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [Color.orange, .purple].map { $0.toHexString() ?? ""})
     GameEditor(game: game) {
         print("game name changed to \(game.name)")
         print("game pegs changed to \(game.pegChoices)")

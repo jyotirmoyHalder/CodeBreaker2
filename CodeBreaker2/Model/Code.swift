@@ -7,21 +7,25 @@
 
 
 import SwiftUI
+import SwiftData
 
-struct Code {
-    var kind: Kind
-    var pegs: [Peg] = Array(repeating: Peg.missing, count: 4)
+@Model class Code {
+    var _kind: String = Kind.unknown.rawValue
+    var pegs: [Peg]
     
-    static let missiongPeg: Peg = .clear
-    
-    enum Kind: Equatable {
-        case master(isHidden: Bool)
-        case guess
-        case attempt([Match])
-        case unknown
+    var kind: Kind {
+        get { return Kind(rawValue: _kind) }
+        set { _kind = newValue.rawValue }
     }
     
-    mutating func randomize(from pegChoices: [Peg]) {
+    init(kind: Kind, pegs: [Peg] = Array(repeating: missiongPeg, count: 4)) {
+        self.pegs = pegs
+        self.kind = kind
+    }
+    
+    static let missiongPeg: Peg = ""
+    
+    func randomize(from pegChoices: [Peg]) {
         for index in pegs.indices {
             pegs[index] = pegChoices.randomElement() ?? Code.missiongPeg
         }
@@ -36,8 +40,8 @@ struct Code {
         }
     }
     
-    mutating func reset() {
-        pegs = Array(repeating: .missing, count: 4)
+    func reset() {
+        pegs = Array(repeating: Code.missiongPeg, count: 4)
     }
     
     var matches: [Match]? {
@@ -70,7 +74,7 @@ struct Code {
             }
         }
         
-        // MARK: USING FOR LOOP WE CAN IMPLEMENT THE CODE
+        // MARK: USING FOR LOOP WE CAN ALSO IMPLEMENT THE CODE
         /*
 //        for index in pegs.indices.reversed() {
 //            if pegsToMatch.count > index, pegsToMatch[index] == pegs[index] {
