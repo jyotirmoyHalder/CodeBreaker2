@@ -73,8 +73,8 @@ extension CodeBreaker {
     }
 }
 
-#Preview {
-    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [Color.orange, .purple].map { $0.toHexString() ?? ""})
+#Preview(traits: .swiftData) {
+    @Previewable var game = CodeBreaker(name: "Preview", pegChoices: [Color.orange, .purple])
     GameEditor(game: game) {
         print("game name changed to \(game.name)")
         print("game pegs changed to \(game.pegChoices)")

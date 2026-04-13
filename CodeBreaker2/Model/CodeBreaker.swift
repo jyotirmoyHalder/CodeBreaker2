@@ -16,21 +16,35 @@ typealias Peg = String
     var name: String
     @Relationship(deleteRule: .cascade) var masterCode: Code = Code(kind: .master(isHidden: true))
     @Relationship(deleteRule: .cascade) var guess: Code = Code(kind: .guess)
-    @Relationship(deleteRule: .cascade) var attempts: [Code] = []
+    @Relationship(deleteRule: .cascade) var _attempts: [Code] = []
     var pegChoices: [Peg]
     @Transient var startTime: Date?
     var endTime: Date? 
     var elapsedTime: TimeInterval = 0
+    var lastAttemptDate: Date? = Date.now
+    var isOver: Bool = false
+
     
-    init(name: String = "Code Breaker", pegChoices: [Peg] ) {
+    var attempts: [Code] {
+        get { _attempts.sorted { $0.timestamp > $1.timestamp } }
+        set { _attempts = newValue }
+    }
+    
+    init(name: String = "Code Breaker", pegChoices: [Peg]) {
         self.name = name
         self.pegChoices = pegChoices
         masterCode.randomize(from: pegChoices)
     }
     
+    func updateElapsedTime() {
+        pauseTimer()
+        startTimer()
+    }
+    
     func startTimer() {
         if startTime == nil, !isOver {
             startTime = .now
+            elapsedTime += 0.00001
         }
     }
     
@@ -41,9 +55,6 @@ typealias Peg = String
         startTime = nil
     }
     
-    var isOver: Bool {
-        attempts.first?.pegs == masterCode.pegs
-    }
     
     func restart() {
         masterCode.kind = .master(isHidden: true)
@@ -53,6 +64,7 @@ typealias Peg = String
         startTime = .now
         endTime = nil
         elapsedTime = 0
+        isOver = false
     }
     
     func setGuessPeg(_ peg: Peg, at index: Int) {
@@ -66,10 +78,11 @@ typealias Peg = String
             kind: .attempt(guess.match(against: masterCode)),
             pegs: guess.pegs
         )
-        attempt.kind = .attempt(guess.match(against: masterCode))
         attempts.insert(attempt, at: 0)
+        lastAttemptDate = .now
         guess.reset()
-        if isOver {
+        if attempts.first?.pegs == masterCode.pegs {
+            isOver = true
             endTime = .now
             masterCode.kind = .master(isHidden: false)
             pauseTimer()

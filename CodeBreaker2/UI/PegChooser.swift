@@ -31,7 +31,7 @@ struct PegChooser: View {
 }
 
 #Preview {
-    PegChooser(choices: [Color.red, .blue, .green, .yellow].map(\.description)) { peg in
+    PegChooser(choices: [Color.red, .blue, .green, .yellow].map { $0.toHexString() ?? ""}) { peg in
         print("chose \(peg)")
     }
     .padding()

@@ -20,13 +20,13 @@ struct GameSummery: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     List {
-        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow].map{ $0.toHexString() ?? ""}))
+        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow]))
     }
     
     List {
-        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow].map{ $0.toHexString() ?? ""}))
+        GameSummery(game: CodeBreaker(name: "Preview", pegChoices: [Color.red, .cyan, .yellow]))
     }
     .listStyle(.plain)
 }

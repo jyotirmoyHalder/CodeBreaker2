@@ -12,6 +12,7 @@ import SwiftData
 @Model class Code {
     var _kind: String = Kind.unknown.rawValue
     var pegs: [Peg]
+    var timestamp = Date.now
     
     var kind: Kind {
         get { return Kind(rawValue: _kind) }

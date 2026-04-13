@@ -96,41 +96,11 @@ struct CodeBreakerView: View {
     
 }
 
-extension View {
-    func trackElapsedTime(in game: CodeBreaker) -> some View {
-        self.modifier(ElapsedTimeTracker(game: game))
-    }
-}
 
-struct ElapsedTimeTracker: ViewModifier {
-    @Environment(\.scenePhase) var scenePhase
-    let game: CodeBreaker
-    
-    func body(content: Content) -> some View {
-        content
-            .onAppear {
-                game.startTimer()
-            }
-            .onDisappear {
-                game.pauseTimer()
-            }
-            .onChange(of: game) { oldGame, newGame in
-                oldGame.pauseTimer()
-                newGame.startTimer()
-            }
-            .onChange(of: scenePhase) {
-                switch scenePhase {
-                case .active: game.startTimer()
-                case .background: game.pauseTimer()
-                default: break
-                }
-            }
-    }
-}
 
 extension CodeBreaker {
-    convenience init(name: String = "Code Breaker", colorPegChoices: [Color]) {
-        self.init(name: name, pegChoices: colorPegChoices.map{ $0.toHexString() ?? ""})
+    convenience init(name: String = "Code Breaker", pegChoices: [Color]) {
+        self.init(name: name, pegChoices: pegChoices.map{ $0.toHexString() ?? ""})
     }
     var pegColorChoices: [Color] {
         get { pegChoices.map { Color(hex: $0) ?? .clear }}
@@ -138,8 +108,8 @@ extension CodeBreaker {
     }
 }
 
-#Preview {
-    @Previewable @State var game = CodeBreaker(pegChoices: [Color.brown, .yellow, .orange, .black, .green].map{$0.toHexString() ?? ""})
+#Preview(traits: .swiftData) {
+    @Previewable @State var game = CodeBreaker(pegChoices: [Color.brown, .yellow, .orange, .black, .green])
     NavigationStack {
         CodeBreakerView(game: game)
     }

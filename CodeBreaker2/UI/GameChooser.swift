@@ -8,14 +8,26 @@
 import SwiftUI
 
 struct GameChooser: View {
-    
+    // MARK: Data Owned by Me
     
     @State private var selection: CodeBreaker? = nil
+    
+    @State private var sortOption: GameList.SortOption = .name
+    @State private var search: String = ""
         
     var body: some View {
         NavigationSplitView(columnVisibility: .constant(.all)) {
-            GameList(selection: $selection)
+            Picker("Sort By", selection: $sortOption.animation(.default)) {
+                ForEach(GameList.SortOption.allCases, id: \.self) { option in
+                    Text("\(option.title)")
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            GameList(sortBy: sortOption, nameContains: search, selection: $selection)
                 .navigationTitle("Code Breaker")
+                .searchable(text: $search, placement: .navigationBarDrawer, prompt: "Search")
+                .animation(.easeOut, value: search)
                 .navigationBarTitleDisplayMode(.large)
         } detail: {
             if let selection {
@@ -31,6 +43,6 @@ struct GameChooser: View {
     }
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     GameChooser()
 }
